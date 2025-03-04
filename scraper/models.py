@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+import json
 
 class ScrapeTask(models.Model):
     STATUS_CHOICES = [
@@ -31,3 +33,22 @@ class ScrapeTask(models.Model):
     def clean(self):
         if len(self.selector) < 1:
             raise ValidationError("Selector cannot be empty")
+
+class SiteCookie(models.Model):
+    domain = models.CharField(max_length=255)
+    cookies = models.JSONField()
+    last_updated = models.DateTimeField(auto_now=True)
+    is_valid = models.BooleanField(default=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['domain']),
+        ]
+
+    @property
+    def is_expired(self):
+        # Check if cookie is older than 30 minutes
+        return (timezone.now() - self.last_updated).total_seconds() > 1800
+
+    def __str__(self):
+        return f"{self.domain} - {self.last_updated}"
