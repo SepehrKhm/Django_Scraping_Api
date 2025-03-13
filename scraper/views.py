@@ -10,8 +10,8 @@ class HasAPIKeyOrQueryParam(HasAPIKey):
     def has_permission(self, request, view):
         api_key = request.query_params.get('api_key', '')
         if api_key:
-            # Try both your API keys
-            if api_key in ['4Q9MlNIl.7KDzGhN7OsH27xMK8ZcYw3pnyfeGzVR2', 'QKq23mW7.NCtTgRX8n6EpdSKZYEfqCKXrbv416s09']:
+            # Use only the scraping API key
+            if api_key == '4Q9MlNIl.7KDzGhN7OsH27xMK8ZcYw3pnyfeGzVR2':
                 request.META['HTTP_X_API_KEY'] = api_key
                 return True
             print(f"Invalid API key: {api_key}")
